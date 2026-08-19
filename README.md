@@ -54,9 +54,10 @@ Copy the `SKILL.md` into any directory your agent discovers as a skill root
 
 ## Usage
 
-- Say something like *"这个 skill 真好用，想给它点个 star"* or *"star 一下 xx 项目"*,
-  or simply invoke a third-party skill for the first time — the agent will handle
-  the rest, always confirming with you before starring.
+- Say something like *"this skill is really useful, I want to star it"* or
+  *"please star that project"*, or simply invoke a third-party skill for the
+  first time — the agent will handle the rest, always confirming with you
+  before starring.
 - The gratitude ledger lives at `~/.dsh/star-gratitude/log.md` and is created on
   first use. Entries are formatted as
   `date | owner/repo | name | why it was useful | status` where status is
