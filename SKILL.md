@@ -40,9 +40,12 @@ description: Star a third-party skill or project the user found useful. Use when
 ## 确认与执行（两种工作流共用）
 
 1. **先提醒，等确认**：必须等用户明确确认，同一轮内不要执行 star。
-2. 检查是否已 star：`gh api user/starred/OWNER/REPO` —— HTTP 204 已 star（告知并记账 `✅ starred` 后结束）；HTTP 404 未 star，继续；`gh` 未安装/未登录（`gh auth status` 确认）则给出 `https://github.com/OWNER/REPO` 手动链接。
-3. 执行：`gh api -X PUT user/starred/OWNER/REPO`。
-4. 记账（追加到 `~/.dsh/star-gratitude/log.md`，文件不存在则先建表头）：
+2. 检查是否已 star：`gh api user/starred/OWNER/REPO -i`，看响应头第一行的状态行——`HTTP/2.0 204` = 已 star（告知并记账 `✅ starred` 后结束）；`HTTP/2.0 404` = 未 star，继续。注意 `gh api` **不带 `-i` 时不打印状态码**（204 完全静默、退出码 0；404 才打印 `HTTP 404`），所以判断已/未 star 一律看 `-i` 的状态行，不要靠猜。`gh` 未安装/未登录（`gh auth status` 确认）则给出 `https://github.com/OWNER/REPO` 手动链接。
+3. 执行：`gh api -X PUT user/starred/OWNER/REPO`（成功时无输出、退出码 0；不放心可再跑一次第 2 步确认）。
+4. `gh api` 的 flag 记不清时，用 curl 兜底（token 由 `gh auth token` 提供，不写死、不泄露）：
+   - 检查：`curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token $(gh auth token)" https://api.github.com/user/starred/OWNER/REPO` —— 输出 `204` = 已 star，`404` = 未 star；
+   - 执行：`curl -s -o /dev/null -w "%{http_code}" -X PUT -H "Authorization: token $(gh auth token)" https://api.github.com/user/starred/OWNER/REPO` —— 输出 `204` = 成功。
+5. 记账（追加到 `~/.dsh/star-gratitude/log.md`，文件不存在则先建表头）：
 
    ```
    - YYYY-MM-DD | owner/repo | <skill/项目名> | <一句话为什么好用> | ✅ starred
@@ -56,3 +59,4 @@ description: Star a third-party skill or project the user found useful. Use when
 - 拿不准仓库归属 → 问用户，不猜。
 - 任何失败（网络、权限、找不到仓库）→ 给出手动链接，绝不静默放弃。
 - 提醒要**轻**：一句话带过，不打断任务节奏；只有用户回应后才进入确认流程。
+- `gh api` **不支持 curl 风格的 `-w` / `-o` 参数**（传了会报 `unknown shorthand flag: 'w' in -w`）；要看 HTTP 状态码用 `-i`，或改用上面的 curl 兜底，不要在 `gh api` 上套 curl 参数。
