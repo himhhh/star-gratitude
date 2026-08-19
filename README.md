@@ -2,6 +2,8 @@
 
 Never forget to star the skills and projects you actually use and enjoy.
 
+**English** · [简体中文](README.zh-CN.md)
+
 A tiny agent skill that reminds you to give a GitHub star to third-party skills and
 projects you found useful — because "I should star this later" almost never
 happens. It locates the source repo of a skill, checks whether you already
